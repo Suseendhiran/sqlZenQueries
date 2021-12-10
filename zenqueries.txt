@@ -1,0 +1,140 @@
+Tables Creation
+
+CREATE TABLE USERS (
+    UserId int NOT NULL AUTO_INCREMENT,
+  FirstName varchar(255)  NOT NULL,
+    LastName varchar(255) NOT NULL,
+    Age int,
+    PRIMARY KEY (UserId)
+);
+CREATE TABLE CODEKATA (
+    ckid int NOT NULL AUTO_INCREMENT,
+    solvedProblemsCount int,
+ 	points int,
+  userId int NOT NULL,
+  	PRIMARY KEY (ckid),
+  FOREIGN KEY (userId) REFERENCES USERS(UserId)
+);
+CREATE TABLE ATTENDANCE (
+    id int NOT NULL AUTO_INCREMENT,
+    attendancePercentage int NOT NULL,
+  	userId int NOT NULL,
+  	PRIMARY KEY (id),
+  	FOREIGN KEY (userId) REFERENCES USERS(UserId)
+);
+CREATE TABLE TOPICS (
+    id int NOT NULL AUTO_INCREMENT,
+    topic VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE COURSES (
+    id int NOT NULL AUTO_INCREMENT,
+    courseName VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+CREATE TABLE COMPANY_DRIVES (
+    id int NOT NULL AUTO_INCREMENT,
+    company VARCHAR(255) NOT NULL,
+  	PRIMARY KEY (id)
+);
+CREATE TABLE MENTORS (
+    id int NOT NULL AUTO_INCREMENT,
+    mentorName VARCHAR(255) NOT NULL,
+  	PRIMARY KEY (id)
+);
+
+CREATE TABLE STUDENT_ACTIVATED_COURSES (
+    id int NOT NULL AUTO_INCREMENT,
+  courseId int NOT NULL,
+    userId int NOT NULL,
+  	PRIMARY KEY (id),
+  	FOREIGN KEY (userId) REFERENCES USERS(UserId),
+  FOREIGN KEY (courseId) REFERENCES COURSES(id)
+);
+
+CREATE TABLE STUDENTS_ATTENDED_COMPANIES (
+    id int NOT NULL AUTO_INCREMENT,
+  	companyId int NOT NULL,
+    userId int NOT NULL,
+  	PRIMARY KEY (id),
+  	FOREIGN KEY (userId) REFERENCES USERS(UserId),
+  FOREIGN KEY (companyId) REFERENCES COMPANY_DRIVES(id)
+);
+
+CREATE TABLE MENTOR_ASSIGNED_STUDENTS (
+	 id int NOT NULL AUTO_INCREMENT,
+  	mentorId INT NOT NULL,
+  	studentId INT NOT NULL,
+  	PRIMARY KEY (id),
+  	FOREIGN KEY (mentorId) REFERENCES MENTORS(id),
+  	FOREIGN KEY (studentId) REFERENCES USERS(UserId)
+);
+
+Inserting data to those tables
+
+
+INSERT INTO USERS (FirstName,LastName,age)
+VALUES ('Alex','Romero',35),("Norma","Bates",35),("Norman","Bates",19),("Dylan","caleb",25),("Emma","will",19);
+
+INSERT INTO CODEKATA (solvedProblemsCount,points,userId)
+VALUES(12,205,1),(13,205,2),(212,205,3),(82,205,4),(52,201,5);
+
+INSERT INTO ATTENDANCE (attendancePercentage,userId)
+VALUES(90,1),(90,2),(80,3),(89,4),(56,5);
+
+INSERT INTO TOPICS (topic)
+VALUES("HTML"),("CSS"),("DOM"),("JS"),("REACT");
+
+INSERT INTO COURSES (courseName)
+VALUES("Full Stack"),("Data Science"),("Machine Learning"),("SAAS"),("Business Management");
+
+INSERT INTO COMPANY_DRIVES (company)
+VALUES("Freshworks"),("Freshdesk"),("TCS"),("Infosys"),("BPL");
+
+INSERT INTO MENTORS (mentorName)
+VALUES("Ravi"),("Ragu"),("Stella"),("Maalik"),("Bala");
+
+INSERT INTO STUDENT_ACTIVATED_COURSES (courseId,userId)
+VALUES(1,1),(1,2),(2,3),(2,4),(4,5),(2,5),(5,2);
+
+INSERT INTO STUDENTS_ATTENDED_COMPANIES(userId,companyId ) 
+VALUES(1,1),(1,2),(2,2),(2,3),(4,3),(5,1),(5,2);
+
+INSERT INTO MENTOR_ASSIGNED_STUDENTS(studentId,mentorId)
+VALUES (1,1),(2,1),(3,4),(3,3),(4,2),(5,2)
+
+
+
+
+get number problems solved in codekata by combining the users
+SELECT USERS.UserId, FirstName, LastName, SUM(solvedProblemsCount)AS problemsSolved
+FROM USERS JOIN CODEKATA 
+ON USERS.UserId = CODEKATA.userId 
+GROUP BY userId
+
+display the no of company drives attended by a user
+SELECT USERS.UserId,FirstName,LastName,COUNT(companyId) as No_Companies_Attended 
+FROM USERS 
+LEFT JOIN STUDENTS_ATTENDED_COMPANIES 
+ON USERS.UserId = STUDENTS_ATTENDED_COMPANIES.userId 
+GROUP BY userId
+
+combine and display students_activated_courses and courses for a specific user groping them based on the course
+SELECT U.UserId,SAC.courseId,courseName
+FROM USERS AS U LEFT JOIN STUDENT_ACTIVATED_COURSES AS SAC
+ON U.UserId =SAC.userId LEFT JOIN COURSES ON SAC.courseId = COURSES.id ORDER BY U.UserId 
+
+list all the mentors
+SELECT id,mentorName FROM MENTORS
+
+list the number of students that are assigned for a mentor
+SELECT MENTORS.id,mentorName,COUNT(studentId) FROM MENTORS LEFT JOIN MENTOR_ASSIGNED_STUDENTS AS MAS ON MENTORS.id = MAS.mentorId GROUP BY MENTORS.id
+
+
+
+
+
+
+
+
